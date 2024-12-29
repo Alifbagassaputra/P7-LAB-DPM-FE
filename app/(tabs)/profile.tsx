@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet} from 'react-native';
-import {useRouter} from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {ThemedView} from '@/components/ThemedView';
-import {ThemedText} from '@/components/ThemedText';
-import {ActivityIndicator, Button, Dialog, PaperProvider, Portal, Text} from 'react-native-paper';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
+import { ActivityIndicator, Button, Dialog, PaperProvider, Portal, Text } from 'react-native-paper';
 import API_URL from '@/config/config';
 
 type UserProfile = {
@@ -27,7 +27,7 @@ const ProfileScreen = () => {
         try {
             const token = await AsyncStorage.getItem('token');
             const response = await axios.get<{ data: UserProfile }>(`${API_URL}/api/profile`, {
-                headers: {Authorization: `Bearer ${token}`},
+                headers: { Authorization: `Bearer ${token}` },
             });
             setProfile(response.data.data);
         } catch (error) {
@@ -50,7 +50,7 @@ const ProfileScreen = () => {
         return (
             <PaperProvider>
                 <ThemedView style={styles.container}>
-                    <ActivityIndicator animating={true}/>
+                    <ActivityIndicator animating={true} size="large" color="#fff" />
                 </ThemedView>
             </PaperProvider>
         );
@@ -60,16 +60,20 @@ const ProfileScreen = () => {
         <PaperProvider>
             <ThemedView style={styles.container}>
                 {profile ? (
-                    <ThemedView>
+                    <View style={styles.profileContainer}>
                         <ThemedText style={styles.title}>Profile</ThemedText>
-                        <ThemedText style={styles.label}>Username:</ThemedText>
-                        <ThemedText style={styles.value}>{profile.username}</ThemedText>
-                        <ThemedText style={styles.label}>Email:</ThemedText>
-                        <ThemedText style={styles.value}>{profile.email}</ThemedText>
+                        <View style={styles.infoContainer}>
+                            <ThemedText style={styles.label}>Username:</ThemedText>
+                            <ThemedText style={styles.value}>{profile.username}</ThemedText>
+                        </View>
+                        <View style={styles.infoContainer}>
+                            <ThemedText style={styles.label}>Email:</ThemedText>
+                            <ThemedText style={styles.value}>{profile.email}</ThemedText>
+                        </View>
                         <Button mode="contained" onPress={handleLogout} style={styles.logoutButton}>
                             Log Out
                         </Button>
-                    </ThemedView>
+                    </View>
                 ) : (
                     <ThemedText>No profile data available</ThemedText>
                 )}
@@ -96,17 +100,33 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 16,
+        backgroundColor: '#6A82FB', // Soft purple background color
+    },
+    profileContainer: {
+        width: '90%',
+        maxWidth: 380, // Max width for larger screens
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 6,
+        elevation: 6,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 24,
         color: '#333',
+        textAlign: 'center',
+    },
+    infoContainer: {
+        marginBottom: 16,
     },
     label: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginTop: 16,
         color: '#333',
     },
     value: {
@@ -115,6 +135,7 @@ const styles = StyleSheet.create({
     },
     logoutButton: {
         marginTop: 24,
+        backgroundColor: '#1E3A8A',
     },
 });
 

@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import {
     ActivityIndicator,
     Button,
@@ -12,10 +12,10 @@ import {
 } from 'react-native-paper';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Stack, useLocalSearchParams, useRouter} from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import API_URL from '@/config/config';
-import {ThemedView} from '@/components/ThemedView';
-import {useTodos} from '@/context/TodoContext';
+import { ThemedView } from '@/components/ThemedView';
+import { useTodos } from '@/context/TodoContext';
 
 type Todo = {
     _id: string;
@@ -81,7 +81,7 @@ const TodoDetailScreen = () => {
         return (
             <PaperProvider>
                 <ThemedView style={styles.container}>
-                    <ActivityIndicator style={styles.loading} animating={true} />
+                    <ActivityIndicator style={styles.loading} animating={true} color="#6200ee" size="large" />
                 </ThemedView>
             </PaperProvider>
         );
@@ -95,7 +95,7 @@ const TodoDetailScreen = () => {
         <PaperProvider>
             <Stack.Screen options={{ title: 'Todo Detail' }} />
             <ThemedView style={styles.container}>
-                <Card style={styles.card} elevation={3}>
+                <Card style={styles.card} elevation={5}>
                     <Card.Content>
                         <TextInput
                             label="Title"
@@ -103,6 +103,7 @@ const TodoDetailScreen = () => {
                             onChangeText={setTitle}
                             style={styles.input}
                             mode="outlined"
+                            theme={{ colors: { primary: '#6200ee' } }}
                         />
                         <TextInput
                             label="Description"
@@ -111,8 +112,15 @@ const TodoDetailScreen = () => {
                             style={styles.input}
                             mode="outlined"
                             multiline
+                            theme={{ colors: { primary: '#6200ee' } }}
                         />
-                        <Button mode="contained" onPress={handleUpdateTodo} style={styles.updateButton}>
+                        <Button
+                            mode="contained"
+                            onPress={handleUpdateTodo}
+                            style={styles.updateButton}
+                            labelStyle={styles.buttonLabel}
+                            buttonColor="#6200ee"
+                        >
                             Update Todo
                         </Button>
                     </Card.Content>
@@ -124,7 +132,7 @@ const TodoDetailScreen = () => {
                             <Text>Todo updated successfully</Text>
                         </Dialog.Content>
                         <Dialog.Actions>
-                            <Button onPress={hideDialog}>OK</Button>
+                            <Button onPress={hideDialog} mode="contained" buttonColor="#6200ee">OK</Button>
                         </Dialog.Actions>
                     </Dialog>
                 </Portal>
@@ -136,17 +144,26 @@ const TodoDetailScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        padding: 20,
+        backgroundColor: '#F8F9FA',
     },
     card: {
-        marginBottom: 16,
-        borderRadius: 8,
+        marginBottom: 20,
+        borderRadius: 12,
+        backgroundColor: '#fff',
     },
     input: {
-        marginBottom: 12,
+        marginBottom: 15,
+        borderRadius: 8,
     },
     updateButton: {
-        marginTop: 12,
+        marginTop: 20,
+        paddingVertical: 10,
+        borderRadius: 8,
+    },
+    buttonLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
     },
     loading: {
         flex: 1,

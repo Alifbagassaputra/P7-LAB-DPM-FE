@@ -1,10 +1,11 @@
-import React, {useState} from "react";
-import {Image, StyleSheet, Text, TextInput, TouchableOpacity} from "react-native";
-import {useRouter} from "expo-router";
+import React, { useState } from "react";
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Platform } from "react-native";
+import { useRouter } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {ThemedView} from "@/components/ThemedView";
-import {Button, Dialog, PaperProvider, Portal} from "react-native-paper";
+import { ThemedView } from "@/components/ThemedView";
+import { Button, Dialog, PaperProvider, Portal } from "react-native-paper";
+import { Ionicons } from "@expo/vector-icons";
 import API_URL from "../../config/config";
 
 export default function LoginScreen() {
@@ -41,29 +42,52 @@ export default function LoginScreen() {
     return (
         <PaperProvider>
             <ThemedView style={styles.container}>
-                <Image source={require("../../assets/images/icon.png")} style={styles.logo} />
+                {/* Solid Blue Background */}
+                <View style={styles.blueBackground}>
+                    <Image source={require("../../assets/images/icon.png")} style={styles.logo} />
+                </View>
+
+                {/* Title and Subtitle */}
                 <Text style={styles.title}>Welcome Back!</Text>
                 <Text style={styles.subtitle}>Log in to continue</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Username"
-                    value={username}
-                    onChangeText={setUsername}
-                    autoCapitalize="none"
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                />
-                <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                    <Text style={styles.loginButtonText}>Login</Text>
+
+                {/* Username Input with Icon */}
+                <View style={styles.inputContainer}>
+                    <Ionicons name="person-outline" size={24} color="#fff" style={styles.inputIcon} />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Username"
+                        placeholderTextColor="#fff"
+                        value={username}
+                        onChangeText={setUsername}
+                        autoCapitalize="none"
+                    />
+                </View>
+
+                {/* Password Input with Icon */}
+                <View style={styles.inputContainer}>
+                    <Ionicons name="lock-closed-outline" size={24} color="#fff" style={styles.inputIcon} />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Password"
+                        placeholderTextColor="#fff"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                    />
+                </View>
+
+                {/* Login Button with Blue Background */}
+                <TouchableOpacity style={styles.registerButton} onPress={handleLogin}>
+                    <Text style={styles.registerButtonText}>Login</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.registerButton} onPress={() => router.push("/auth/RegisterScreen")}>
-                    <Text style={styles.registerButtonText}>Register</Text>
+
+                {/* Register Link */}
+                <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/auth/RegisterScreen")}>
+                    <Text style={styles.loginButtonText}>Don't have an account? Register</Text>
                 </TouchableOpacity>
+
+                {/* Dialog for Login Feedback */}
                 <Portal>
                     <Dialog visible={dialogVisible} onDismiss={handleDialogDismiss}>
                         <Dialog.Title>{isSuccess ? "Success" : "Login Failed"}</Dialog.Title>
@@ -86,61 +110,92 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         padding: 16,
-        backgroundColor: "#f9f9f9",
+        backgroundColor: "#1E3A8A", // Solid Blue Background
     },
-    logo: {
-        width: 150,
-        height: 150,
-        marginBottom: 24,
-        resizeMode: "contain",
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 8,
-        color: "#333",
-    },
-    subtitle: {
-        fontSize: 16,
-        marginBottom: 24,
-        color: "#666",
-    },
-    input: {
+    blueBackground: {
         width: "100%",
-        height: 48,
-        borderColor: "#ccc",
-        borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        marginBottom: 16,
-        backgroundColor: "#fff",
-    },
-    loginButton: {
-        width: "100%",
-        height: 48,
-        backgroundColor: "#007BFF",
-        borderRadius: 8,
+        height: 250,
+        backgroundColor: "#1E3A8A", // Solid Blue Background
+        borderBottomLeftRadius: 40,
+        borderBottomRightRadius: 40,
         justifyContent: "center",
         alignItems: "center",
-        marginBottom: 16,
+        marginBottom: 30,
     },
-    loginButtonText: {
-        color: "#fff",
+    logo: {
+        width: 120,
+        height: 120,
+        resizeMode: "contain",
+        marginBottom: 20, // Adjusted for better positioning
+    },
+    title: {
+        fontSize: 32,
+        fontWeight: "700",
+        marginBottom: 12,
+        color: "#FFFFFF", // White title text for contrast against blue background
+    },
+    subtitle: {
+        fontSize: 18,
+        marginBottom: 30,
+        color: "#D1D5DB", // Light gray subtitle for contrast
+    },
+    inputContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        width: "100%",
+        height: 55,
+        borderColor: "#D1D5DB",
+        borderWidth: 1,
+        borderRadius: 30,
+        paddingHorizontal: 16,
+        marginBottom: 20,
+        backgroundColor: "#FFFFFF", // White background for input fields
+        shadowColor: "#B4D1E7",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+    },
+    inputIcon: {
+        marginRight: 10,
+        color: "#4A4A4A", // Gray icon for input fields
+    },
+    input: {
+        flex: 1,
         fontSize: 16,
-        fontWeight: "600",
+        color: "#4A4A4A", // Dark text color for inputs
     },
     registerButton: {
         width: "100%",
-        height: 48,
+        height: 55,
+        borderRadius: 30,
+        justifyContent: "center",
+        alignItems: "center",
+        marginBottom: 20,
+        backgroundColor: "#6A82FB", // Blue button color
+        shadowColor: "#6A82FB",
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.3,
+        shadowRadius: 15,
+    },
+    registerButtonText: {
+        color: "#fff",
+        fontSize: 18,
+        fontWeight: "600",
+    },
+    loginButton: {
+        marginTop: 16,
+        width: "100%",
+        height: 50,
         borderWidth: 1,
-        borderColor: "#007BFF",
-        borderRadius: 8,
+        borderColor: "#6A82FB",
+        borderRadius: 30,
         justifyContent: "center",
         alignItems: "center",
     },
-    registerButtonText: {
-        color: "#007BFF",
+    loginButtonText: {
+        color: "#6A82FB", // Blue text for Register link
         fontSize: 16,
         fontWeight: "600",
+        textDecorationLine: "underline",
     },
 });

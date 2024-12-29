@@ -1,9 +1,10 @@
-import React, {useState} from "react";
-import {StyleSheet, Text, TextInput, TouchableOpacity} from "react-native";
-import {useRouter} from "expo-router";
+import React, { useState } from "react";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Animated, KeyboardAvoidingView, Platform } from "react-native";
+import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
-import {ThemedView} from "@/components/ThemedView";
-import {Button, Dialog, PaperProvider, Portal} from "react-native-paper";
+import { ThemedView } from "@/components/ThemedView";
+import { Button, Dialog, PaperProvider, Portal } from "react-native-paper";
 import API_URL from "../../config/config";
 
 export default function RegisterScreen() {
@@ -14,9 +15,27 @@ export default function RegisterScreen() {
     const [dialogMessage, setDialogMessage] = useState("");
     const router = useRouter();
 
+    const scaleAnim = new Animated.Value(1);
+
+    const handleRegisterButtonPressIn = () => {
+        Animated.spring(scaleAnim, {
+            toValue: 0.98,
+            friction: 6,
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const handleRegisterButtonPressOut = () => {
+        Animated.spring(scaleAnim, {
+            toValue: 1,
+            friction: 6,
+            useNativeDriver: true,
+        }).start();
+    };
+
     const handleRegister = async () => {
         try {
-            await axios.post(`${API_URL}/api/auth/register`, {username, password, email});
+            await axios.post(`${API_URL}/api/auth/register`, { username, password, email });
             router.replace("/auth/LoginScreen");
         } catch (error) {
             const errorMessage = (error as any).response?.data?.message || "An error occurred";
@@ -27,37 +46,72 @@ export default function RegisterScreen() {
 
     return (
         <PaperProvider>
-            <ThemedView style={styles.container}>
-                <Text style={styles.title}>Create an Account</Text>
-                <Text style={styles.subtitle}>Join us and get started</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Username"
-                    value={username}
-                    onChangeText={setUsername}
-                    autoCapitalize="none"
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Email"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                />
-                <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-                    <Text style={styles.registerButtonText}>Register</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/auth/LoginScreen")}>
-                    <Text style={styles.loginButtonText}>Login</Text>
-                </TouchableOpacity>
+            <KeyboardAvoidingView
+                style={styles.container}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
+                <View style={styles.formContainer}>
+                    {/* Heading Text */}
+                    <Text style={styles.heading}>Create Account</Text>
+
+                    {/* Username Input */}
+                    <View style={styles.inputContainer}>
+                        <Ionicons name="person-outline" size={24} color="#ffffff" style={styles.icon} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Username"
+                            value={username}
+                            onChangeText={setUsername}
+                            autoCapitalize="none"
+                            placeholderTextColor="#B0B0B0"
+                        />
+                    </View>
+
+                    {/* Email Input */}
+                    <View style={styles.inputContainer}>
+                        <Ionicons name="mail-outline" size={24} color="#ffffff" style={styles.icon} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Email"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            placeholderTextColor="#B0B0B0"
+                        />
+                    </View>
+
+                    {/* Password Input */}
+                    <View style={styles.inputContainer}>
+                        <Ionicons name="lock-closed-outline" size={24} color="#ffffff" style={styles.icon} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Password"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                            placeholderTextColor="#B0B0B0"
+                        />
+                    </View>
+
+                    {/* Animated Register Button */}
+                    <Animated.View style={[styles.registerButton, { transform: [{ scale: scaleAnim }] }]} >
+                        <TouchableOpacity
+                            onPressIn={handleRegisterButtonPressIn}
+                            onPressOut={handleRegisterButtonPressOut}
+                            onPress={handleRegister}
+                        >
+                            <Text style={styles.registerButtonText}>Sign Up</Text>
+                        </TouchableOpacity>
+                    </Animated.View>
+
+                    {/* Login Link */}
+                    <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/auth/LoginScreen")}>
+                        <Text style={styles.loginButtonText}>Already have an account? Log In</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* Dialog for Registration Feedback */}
                 <Portal>
                     <Dialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
                         <Dialog.Title>Registration Failed</Dialog.Title>
@@ -69,7 +123,7 @@ export default function RegisterScreen() {
                         </Dialog.Actions>
                     </Dialog>
                 </Portal>
-            </ThemedView>
+            </KeyboardAvoidingView>
         </PaperProvider>
     );
 }
@@ -77,58 +131,74 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center",
+        justifyContent: "center",  // Center content vertically
+        alignItems: "center",      // Center content horizontally
+        backgroundColor: "#6A82FB", // Soft purple background color
+    },
+    formContainer: {
+        width: "90%",
+        maxWidth: 380,   // Max width for larger screens
         alignItems: "center",
-        padding: 16,
-        backgroundColor: "#f9f9f9",
+        position: "absolute",
+        top: 180, // Adjust the form positioning lower to make room for the title
     },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 24,
-        color: "#333",
+    heading: {
+        fontSize: 28,
+        fontWeight: "700",
+        color: "#fff",
+        marginBottom: 40,
+        textAlign: "center", // Centered text
     },
-    subtitle: {
-        fontSize: 16,
-        color: "#666",
-        marginBottom: 24,
+    inputContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        width: "100%",
+        height: 55,
+        borderColor: "#FFFFFF",
+        borderWidth: 1,
+        borderRadius: 30,
+        paddingHorizontal: 16,
+        marginBottom: 20,
+        backgroundColor: "#4A4A4A",  // Darker background for input
+        shadowColor: "#000000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 6,
+    },
+    icon: {
+        marginRight: 10,
     },
     input: {
-        width: "100%",
-        height: 48,
-        borderColor: "#ccc",
-        borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        marginBottom: 16,
-        backgroundColor: "#fff",
+        flex: 1,
+        fontSize: 16,
+        color: "#ffffff",
+        paddingVertical: 0,
     },
     registerButton: {
         width: "100%",
-        height: 48,
-        backgroundColor: "#007BFF",
-        borderRadius: 8,
+        height: 55,
+        borderRadius: 30,
         justifyContent: "center",
         alignItems: "center",
-        marginBottom: 16,
+        marginBottom: 20,
+        backgroundColor: "#1E3A8A", // Vibrant blue for call-to-action
+        shadowColor: "#1E3A8A",
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.3,
+        shadowRadius: 15,
     },
     registerButtonText: {
-        color: "#fff",
-        fontSize: 16,
+        color: "#ffffff",
+        fontSize: 18,
         fontWeight: "600",
     },
     loginButton: {
-        width: "100%",
-        height: 48,
-        borderWidth: 1,
-        borderColor: "#007BFF",
-        borderRadius: 8,
-        justifyContent: "center",
-        alignItems: "center",
+        marginTop: 16,
     },
     loginButtonText: {
-        color: "#007BFF",
+        color: "#1E3A8A",  // Match the button color
         fontSize: 16,
         fontWeight: "600",
+        textDecorationLine: "underline",
     },
 });
